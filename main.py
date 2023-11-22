@@ -3,17 +3,18 @@ import db
 
 ser = serial.Serial()  # Remplacez 'COMx' par le port série approprié
 ser.port = 'COM3'
-ser.baudrate = 9600
+ser.baudrate = 115200
 ser.open()
 
 try:
     
     while True:
         uid = ser.read(size=8).decode("utf-8")
-        if (db.check_db(uid)):
-            ser.write('VALID')
+        intuid = int(uid, 16)
+        if (db.check_db(f"{intuid}")):
+            ser.write(b'VALID')
         else:
-            ser.write('INVALID')
+            ser.write(b'INVALID')
         
 
 

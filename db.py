@@ -21,7 +21,7 @@ def check_db(uid):
         query = "SELECT * FROM idtable WHERE identifier = %s"
         cursor.execute(query, (uid,))
         result = cursor.fetchone()
-        result = cursor.fetchone()
+        print(result)
         if (result):
             if result[2] == 0:
                 return True

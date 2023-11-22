@@ -1,6 +1,5 @@
 #include "SPI.h"
 #include "MFRC522.h"
-#include <cstring>
 
 
 #define red_pin D0 // Pin led 
@@ -28,7 +27,7 @@ void validateBadge(String response){
 }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   SPI.begin();
   mfrc522.PCD_Init();
   delay(5);
@@ -42,19 +41,14 @@ void setup() {
 }
 void loop() {
   
-   if ( !mfrc522.PICC_IsNewCardPresent()) { return; }
-   if ( !mfrc522.PICC_ReadCardSerial()) { return; }
+   if (!mfrc522.PICC_IsNewCardPresent()) { return; }
+   if (!mfrc522.PICC_ReadCardSerial()) { return; }
 
-    String uidArr[4] = {String(mfrc522.uid.uidByte[0], HEX), String(mfrc522.uid.uidByte[1], HEX), String(mfrc522.uid.uidByte[2], HEX), String(mfrc522.uid.uidByte[3], HEX)};
-    for (int i=0; i<4; i++) {
-      if(uidArr[i].length() == 1) {
-        uidArr[i] = "0" + uidArr[i];
-      }
-    }
-    Serial.print(uidArr[0] + uidArr[1] + uidArr[2] + uidArr[3]);
+    Serial.printf("%02x", mfrc522.uid.uidByte[0]);
+    Serial.printf("%02x", mfrc522.uid.uidByte[1]);
+    Serial.printf("%02x", mfrc522.uid.uidByte[2]);
+    Serial.printf("%02x", mfrc522.uid.uidByte[3]);
+
     response = Serial.readString();
     validateBadge(response);
-  
-    
-    return;  
 }
