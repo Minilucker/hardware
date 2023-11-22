@@ -10,11 +10,10 @@ try:
     
     while True:
         uid = ser.read(size=8).decode("utf-8")
-        print(uid)
-        if (uid == '53ae5299'):
-            ser.write(bytes('VALID', 'utf-8'))
-        if (uid == '23b0d50b'):
-            ser.write(bytes('INVALID', 'utf-8'))
+        if (db.check_db(uid)):
+            ser.write('VALID')
+        else:
+            ser.write('INVALID')
         
 
 

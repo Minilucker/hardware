@@ -34,9 +34,3 @@ def check_db(uid):
         if 'conn' in locals() and conn.is_connected():
             cursor.close()
             conn.close()
-
-uid_a_verifier = '991299458'
-if check_db(uid_a_verifier):
-    print(f"L'UID {uid_a_verifier} est présent dans la base de données.")
-else:
-    print(f"L'UID {uid_a_verifier} n'est pas présent dans la base de données.")
