@@ -1,5 +1,6 @@
-<?php
+<!-- Brouillon d'application php pour potentiellement interagir avec la db via le wifi depuis l'esp32, abandonné au profit de l'UART -->
 
+<?php
     class Rfid {
         private int $id;
         private int $identifier;
@@ -35,6 +36,7 @@
             $this->revoked = $revoked;
         }
     }
+
     try {
         $pdo = new PDO('mysql:host=localhost;dbname=rfid', 'root', '');
 
@@ -46,7 +48,7 @@
         $query = $pdo->prepare('SELECT * FROM idtable WHERE identifier=:identifier');
         $query->bindValue(':identifier', $payload);
         $query->execute();
-
+        
         $results = $query->fetch(PDO::FETCH_ASSOC);
 
         if($results) {
