@@ -14,7 +14,7 @@
 MFRC522 mfrc522(ss_pin, rst_pin);
 
 // Initialisation de la classe Cipher de Cipher.h
-Cipher * cipher = new Cipher();
+Cipher * cipher = new Cipher("3WBeW3PuK0SzpCQv");
 
 // Variable pour stocker la réponse de la communication série
 String response = "";
@@ -25,13 +25,23 @@ void validateBadge(String response){
       digitalWrite(green_pin, HIGH);
       delay(1000);
       digitalWrite(green_pin, LOW);
-      
+      return;
     }
     if (response == "INVALID") {
       digitalWrite(red_pin, HIGH);
       delay(1000);
       digitalWrite(red_pin, LOW);
+      return;
     }
+    // Pour la lockout policy, bloque 60 seconde si le signal "LOCKED" est reçu (la durée 
+    // devait être récupérée directement dans le Serial mais pour des raisons mentionnées dans le main.py
+    // cela restera hardcoded pour le moment )
+    if (response == "LOCKED") {
+      digitalWrite(red_pin, HIGH);
+      delay(60000);
+      digitalWrite(red_pin,LOW);
+      return;
+      }
 }
 
 void setup() {
@@ -44,15 +54,11 @@ void setup() {
   // Configuration des broches en sortie
   pinMode(rst_pin, OUTPUT);
   pinMode(red_pin,OUTPUT);
-
-
-  cipher->setKey("3WBeW3PuK0SzpCQv");
   pinMode(green_pin, OUTPUT);
 
 }
 void loop() {
     // Vérifie si une nouvelle carte RFID est présente, sinon relance la boucle
-
    if (!mfrc522.PICC_IsNewCardPresent()) { return; }
 
    // Lit les informations de la carte RFID, si il n'y en a pas, relance la boucle
@@ -72,18 +78,15 @@ void loop() {
       cx += snprintf(encryptable+cx, 9-cx, "%02x", bChar);
     }
 
-    // convertit encryptable en classe String
-    String sEncryptable = String(encryptable);
-
     // chiffre l'uid
-    String encryptedString = cipher->encryptString(sEncryptable);
+    String encryptedString = cipher->encryptString(encryptable);
 
     // envoi l'uid chiffré
     Serial.print(encryptedString);
 
     // Lit la réponse de la communication série
+    
     response = Serial.readString();
-
     // Appelle la fonction pour valider le badge en fonction de la réponse
     validateBadge(response);
 }
